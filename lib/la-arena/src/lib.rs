@@ -2,14 +2,19 @@
 
 #![warn(rust_2018_idioms, unused_lifetimes)]
 #![warn(missing_docs)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
-use std::{
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+
+use core::{
     cmp, fmt,
-    hash::{Hash, Hasher},
     iter::{Enumerate, FusedIterator},
     marker::PhantomData,
     ops::{Index, IndexMut, Range, RangeInclusive},
 };
+#[cfg(feature = "std")]
+use std::hash::{Hash, Hasher};
 
 mod map;
 pub use map::{ArenaMap, Entry, OccupiedEntry, VacantEntry};
@@ -88,6 +93,7 @@ impl<T> PartialEq for Idx<T> {
 }
 impl<T> Eq for Idx<T> {}
 
+#[cfg(feature = "std")]
 impl<T> Hash for Idx<T> {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.raw.hash(state);
@@ -96,7 +102,7 @@ impl<T> Hash for Idx<T> {
 
 impl<T> fmt::Debug for Idx<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut type_name = std::any::type_name::<T>();
+        let mut type_name = core::any::type_name::<T>();
         if let Some(idx) = type_name.rfind(':') {
             type_name = &type_name[idx + 1..];
         }
@@ -228,7 +234,7 @@ impl<T> FusedIterator for IdxRange<T> {}
 
 impl<T> fmt::Debug for IdxRange<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_tuple(&format!("IdxRange::<{}>", std::any::type_name::<T>()))
+        f.debug_tuple(&format!("IdxRange::<{}>", core::any::type_name::<T>()))
             .field(&self.range)
             .finish()
     }

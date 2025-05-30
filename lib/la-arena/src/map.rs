@@ -1,5 +1,10 @@
-use std::iter::Enumerate;
-use std::marker::PhantomData;
+use core::iter::Enumerate;
+use core::marker::PhantomData;
+
+#[cfg(not(feature = "std"))]
+use alloc::vec;
+#[cfg(feature = "std")]
+use std::vec;
 
 use crate::Idx;
 
@@ -114,14 +119,14 @@ impl<T, V> ArenaMap<Idx<T>, V> {
     }
 }
 
-impl<T, V> std::ops::Index<Idx<V>> for ArenaMap<Idx<V>, T> {
+impl<T, V> core::ops::Index<Idx<V>> for ArenaMap<Idx<V>, T> {
     type Output = T;
     fn index(&self, idx: Idx<V>) -> &T {
         self.v[Self::to_idx(idx)].as_ref().unwrap()
     }
 }
 
-impl<T, V> std::ops::IndexMut<Idx<V>> for ArenaMap<Idx<V>, T> {
+impl<T, V> core::ops::IndexMut<Idx<V>> for ArenaMap<Idx<V>, T> {
     fn index_mut(&mut self, idx: Idx<V>) -> &mut T {
         self.v[Self::to_idx(idx)].as_mut().unwrap()
     }
@@ -150,7 +155,7 @@ impl<T, V> FromIterator<(Idx<V>, T)> for ArenaMap<Idx<V>, T> {
 }
 
 pub struct ArenaMapIter<IDX, V> {
-    iter: Enumerate<std::vec::IntoIter<Option<V>>>,
+    iter: Enumerate<vec::IntoIter<Option<V>>>,
     _ty: PhantomData<IDX>,
 }
 

@@ -9,5 +9,9 @@ categories = ["data-structures", "memory-management", "rust-patterns"]
 edition = "2024"
 rust-version = "1.85"
 
+[features]
+std = []
+default = ["std"]
+
 [lints]
 workspace = true
